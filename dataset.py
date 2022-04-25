@@ -130,6 +130,11 @@ def extraction2(data_dir, save_dir, radius, extract_channel, extract_label, max_
 def normal_and_spit(normal_data_path, abnormal_data_path):
     normal_data = np.array(pd.read_csv(normal_data_path))
     abnormal_data = np.array(pd.read_csv(abnormal_data_path))
+
+    print('before suffle', normal_data.shape)
+    np.random.shuffle(normal_data)
+    print('after shuffle', normal_data.shape)
+
     normal_num = len(normal_data)
     abnormal_num = len(abnormal_data)
 
@@ -180,8 +185,8 @@ if __name__ == '__main__':
     # save_dir = './data/abnormal'
     # extraction2(data_dir, save_dir, radius, extract_channel, extract_label, max_idx)
 
-    # # normalize the data values to range (0,1)
-    # normal_and_spit('./data/normal/data.csv', './data/abnormal/data.csv')
+    # normalize the data values to range (0,1)
+    normal_and_spit('./data/normal/data.csv', './data/abnormal/data.csv')
 
     # check the dataset 
     train_dataset = AutoencoderDataset('./data/normal_test.csv')
