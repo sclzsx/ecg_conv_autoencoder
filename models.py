@@ -29,26 +29,28 @@ class autoencoder(nn.Module):
 
 
 class convautoencoder(nn.Module):
-    def __init__(self, ch=1):
+    def __init__(self, ch=32):
         super(convautoencoder, self).__init__()
 
-        #encoder
-        self.conv1 = nn.Sequential(nn.Conv1d(1, ch, 3, padding=1), nn.ReLU())# (250*64)
-        self.pool1 = nn.Sequential(nn.MaxPool1d(2,stride=2)) # （50*64）
+        # encoder
+        self.conv1 = nn.Sequential(nn.Conv1d(1, ch, 3, padding=1), nn.ReLU())  # (250*64)
+        self.pool1 = nn.Sequential(nn.MaxPool1d(2, stride=2))  # （50*64）
 
-        self.conv2 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU()) # （50*64）
-        self.pool2 = nn.Sequential(nn.MaxPool1d(2,stride=2)) # （10*64）
+        self.conv2 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU())  # （50*64）
+        self.pool2 = nn.Sequential(nn.MaxPool1d(2, stride=2))  # （10*64）
 
-        self.conv3 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU())# （10*32)
-        self.pool3 = nn.Sequential(nn.MaxPool1d(2,stride=2)) # （2*32)
+        self.conv3 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU())  # （10*32)
+        self.pool3 = nn.Sequential(nn.MaxPool1d(2, stride=2))  # （2*32)
 
-        #decoder
-        self.up1 = nn.Sequential(nn.ConvTranspose1d(ch, ch, 2, stride=2))# （10*32）
-        self.conv4 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU())# （10*32）
-        self.up2 = nn.Sequential(nn.ConvTranspose1d(ch, ch, 2, stride=2))# （50*64）
-        self.conv5 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU())# （50*64）
-        self.up3 = nn.Sequential(nn.ConvTranspose1d(ch, 1, 2, stride=2))# (250*64)
-        # self.conv6 = nn.Sequential(nn.Conv1d(ch, 1, 3, padding=1), nn.Sigmoid())# (250*1)
+        # decoder
+        self.up1 = nn.Sequential(nn.ConvTranspose1d(ch, ch, 2, stride=2))  # （10*32）
+        self.conv4 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU())  # （10*32）
+
+        self.up2 = nn.Sequential(nn.ConvTranspose1d(ch, ch, 2, stride=2))  # （50*64）
+        self.conv5 = nn.Sequential(nn.Conv1d(ch, ch, 3, padding=1), nn.ReLU())  # （50*64）
+
+        self.up3 = nn.Sequential(nn.ConvTranspose1d(ch, ch, 2, stride=2))  # (250*64)
+        self.conv6 = nn.Sequential(nn.Conv1d(ch, 1, 3, padding=1), nn.Sigmoid())# (250*1)
 
     def forward(self, x):
         # encoder
@@ -82,16 +84,16 @@ class convautoencoder(nn.Module):
         # print('x8', x8.shape)
         x9 = self.up3(x8)
         # print('x9', x9.shape)
-        # x10 = self.conv6(x9)
+        x10 = self.conv6(x9)
         # print('x10', x10.shape)
-        return x9
+        return x10
+
 
 if __name__ == '__main__':
     with torch.no_grad():
         # net = autoencoder().cuda()
-
         net = convautoencoder().cuda()
- 
+
         x = torch.randn(64, 1, 256).cuda()
         y = net(x)
         assert x.shape == y.shape

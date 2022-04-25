@@ -1,31 +1,17 @@
 import os
 import wfdb
-from scipy import signal
-import numpy as np
-import wfdb
-import pandas as pd
 from IPython.display import display
-import random
 from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
-# from collections import Counter
-# from matplotlib import pyplot as plt
-# from argparse import ArgumentParser
-
 import torch
 from torch.utils.data import Dataset
 
-from scipy.signal import resample
-from sklearn.model_selection import train_test_split
-
-from numpy.matlib import repmat
 
 def extraction(data_dir, save_dir, radius, extract_channel, extract_label, max_idx):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     filenames = [i[:-4] for i in os.listdir(data_dir) if '.hea' in i]
-    # print(filenames)
     savedata = []
     savelabels = []
     for name in filenames:
@@ -33,14 +19,14 @@ def extraction(data_dir, save_dir, radius, extract_channel, extract_label, max_i
         display(record.__dict__)
 
         alldata = wfdb.rdrecord(data_dir + '/' + name).p_signal
-        length, channel  = alldata.shape
+        length, channel = alldata.shape
         print('length', length)
         if max_idx > length:
             max_idx = length
         elif max_idx < radius * 2 + 1:
             max_idx = length
         anno = wfdb.rdann(data_dir + '/' + name, 'atr')
-        # labels = anno.symbol
+
         peaks = anno.sample
         for peak in peaks:
             start = peak - radius
@@ -73,6 +59,7 @@ def extraction(data_dir, save_dir, radius, extract_channel, extract_label, max_i
     pd.DataFrame(savedata).to_csv(save_dir + '/data.csv', index=False, header=False)
     pd.DataFrame(savelabels).to_csv(save_dir + '/labels.csv', index=False, header=False)
 
+
 def extraction2(data_dir, save_dir, radius, extract_channel, extract_label, max_idx):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -81,11 +68,9 @@ def extraction2(data_dir, save_dir, radius, extract_channel, extract_label, max_
     savedata = []
     savelabels = []
     for name in filenames:
-        # record = wfdb.rdheader(data_dir + '/' + name)
-        # display(record.__dict__)
 
         alldata = wfdb.rdrecord(data_dir + '/' + name).p_signal
-        length, channel  = alldata.shape
+        length, channel = alldata.shape
         print('length', length)
         if max_idx > length:
             max_idx = length
